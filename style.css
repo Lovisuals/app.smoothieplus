@@ -5,17 +5,19 @@ body {
     background-color: #050508; 
     color: white; 
     overscroll-behavior: none; 
+    font-family: 'Montserrat', sans-serif;
 }
 
-input, textarea { 
+input, textarea, select { 
     -webkit-user-select: text; 
     user-select: text; 
+    font-size: 16px !important; /* Prevents auto-zoom on iPhone */
 }
 
 /* =========================================
    2. DRAWERS (Layout Logic)
    ========================================= */
-/* Full Screen Drawer (e.g., Investor/Team Vaults) */
+/* Full Screen Drawer (Investors, Team, Auth) */
 .drawer-full { 
     position: fixed; 
     bottom: 0; left: 0; right: 0; top: 0; 
@@ -32,7 +34,7 @@ input, textarea {
     transform: translateY(0); /* Visible state */
 }
 
-/* Partial Drawer (e.g., Cart) */
+/* Partial Drawer (Cart) */
 .drawer-partial { 
     position: fixed; 
     bottom: 0; left: 0; right: 0; 
@@ -60,21 +62,14 @@ input, textarea {
     0%, 100% { transform: translateY(0px); } 
     50% { transform: translateY(-5px); } 
 }
-
 .float-card { 
     animation: liquid-float 6s ease-in-out infinite; 
     transition: transform 0.2s; 
 }
+.float-card:active { transform: scale(0.98); }
 
-.float-card:active { 
-    transform: scale(0.98); 
-}
-
-/* Green Pulse Glow */
-.pulse-glow { 
-    animation: pulse-green 2s infinite; 
-}
-
+/* Green Pulse Glow (Cart Button) */
+.pulse-glow { animation: pulse-green 2s infinite; }
 @keyframes pulse-green { 
     0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); } 
     70% { box-shadow: 0 0 0 15px rgba(57, 255, 20, 0); } 
@@ -94,7 +89,6 @@ input, textarea {
     background: rgba(20, 20, 30, 0.6); 
     backdrop-filter: blur(10px); 
 }
-
 .shimmer-card::before { 
     content: ''; 
     position: absolute; 
@@ -105,7 +99,6 @@ input, textarea {
     animation: shimmer 6s infinite; 
     pointer-events: none; 
 }
-
 @keyframes shimmer { 
     0% { left: -100%; } 
     20% { left: 200%; } 
@@ -122,7 +115,6 @@ input, textarea {
     border: 2px solid rgba(57, 255, 20, 0.1); 
     z-index: 10; 
 }
-
 .scanner-line { 
     position: absolute; 
     top: 0; left: 0; 
@@ -131,7 +123,6 @@ input, textarea {
     box-shadow: 0 0 10px #39ff14; 
     animation: scan-down 3s linear infinite; 
 }
-
 @keyframes scan-down { 
     0% { top: 0; opacity: 0; } 
     10% { opacity: 1; } 
@@ -145,7 +136,6 @@ input, textarea {
     border: 4px solid #39ff14; 
     opacity: 0.8; 
 }
-
 .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
 .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
 .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
@@ -168,57 +158,39 @@ input, textarea {
     transition: top 0.3s; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
 }
-
 #apiToast.active { top: 20px; }
 #apiToast.error { background: #ef4444; color: white; }
 
 /* Chat Elements */
 .chat-bubble { 
-    max-width: 85%; 
-    padding: 12px; 
-    border-radius: 16px; 
-    margin-bottom: 8px; 
+    max-width: 85%; padding: 12px; 
+    border-radius: 16px; margin-bottom: 8px; 
     font-size: 13px; line-height: 1.4; 
     animation: popIn 0.2s ease-out; 
 }
-
 .chat-self { 
-    background-color: #2563eb; 
-    color: white; 
+    background-color: #2563eb; color: white; 
     align-self: flex-end; 
-    border-bottom-right-radius: 4px; 
-    margin-left: auto; 
+    border-bottom-right-radius: 4px; margin-left: auto; 
 }
-
 .chat-other { 
-    background-color: #1f2937; 
-    color: #e5e7eb; 
+    background-color: #1f2937; color: #e5e7eb; 
     align-self: flex-start; 
-    border-bottom-left-radius: 4px; 
-    border: 1px solid #374151; 
+    border-bottom-left-radius: 4px; border: 1px solid #374151; 
 }
-
 .avatar-circle { 
-    width: 28px; height: 28px; 
-    border-radius: 50%; 
+    width: 28px; height: 28px; border-radius: 50%; 
     background: #333; 
     display: flex; align-items: center; justify-content: center; 
     font-size: 10px; font-weight: bold; color: #aaa; 
-    border: 1px solid #555; 
-    cursor: pointer; 
+    border: 1px solid #555; cursor: pointer; 
 }
-
 .seen-indicator { 
     font-size: 10px; color: #65676b; 
-    text-align: right; 
-    margin-top: 2px; margin-right: 4px; 
-    display: flex; align-items: center; justify-content: flex-end; 
-    gap: 4px; 
+    text-align: right; margin-top: 2px; margin-right: 4px; 
+    display: flex; align-items: center; justify-content: flex-end; gap: 4px; 
 }
-
-.eye-icon { 
-    width: 12px; height: 12px; opacity: 0.7; 
-}
+.eye-icon { width: 12px; height: 12px; opacity: 0.7; }
 
 /* Task Checkboxes */
 .task-check:checked + label span { background-color: #22c55e; border-color: #22c55e; }
@@ -233,3 +205,67 @@ input, textarea {
 .fixed-bottom { flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
 .admin-editable { border: 1px dashed #ff0000; background: rgba(255, 0, 0, 0.1); cursor: text; }
 .glass-panel { background: rgba(20, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15); }
+
+/* =========================================
+   6. PC / DESKTOP FIX (App Emulator Mode)
+   ========================================= */
+@media (min-width: 768px) {
+    body {
+        max-width: 480px;
+        margin: 0 auto;
+        border-left: 1px solid rgba(255,255,255,0.05);
+        border-right: 1px solid rgba(255,255,255,0.05);
+        min-height: 100vh;
+        position: relative;
+        background-color: #000;
+    }
+    
+    html {
+        background-color: #111;
+        background-image: radial-gradient(#1a1a2e 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    /* Force generic containers to stay within phone width */
+    .drawer-full, 
+    .drawer-partial, 
+    #scannerModal, 
+    #loginModal, 
+    #productModal, 
+    #configExportModal, 
+    #memberModal,
+    #systemLockdown {
+        left: 0; 
+        right: 0; 
+        margin-left: auto; 
+        margin-right: auto;
+        max-width: 480px; 
+    }
+
+    /* SECURITY LOCK: Re-enforce hiding to prevent PC leak */
+    .drawer-full { transform: translateY(100%); } 
+    .drawer-full.active { transform: translateY(0); }
+
+    .drawer-partial { transform: translateY(100%); }
+    .drawer-partial.active { transform: translateY(0); }
+
+    /* Center Cart Button */
+    button[onclick="toggleSheet()"] {
+        right: auto !important;
+        left: 50% !important;
+        margin-left: 160px; /* Offset from center to right edge */
+    }
+    
+    /* Center Save Button */
+    #adminSaveBtn {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+    }
+
+    /* Restore Scrollbars for Mouse Users */
+    ::-webkit-scrollbar { width: 6px; display: block; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+}
