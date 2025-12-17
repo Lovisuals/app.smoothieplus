@@ -1,132 +1,235 @@
-/* ============================
-   1. BASE STYLES (Mobile First)
-   ============================ */
+/* =========================================
+   1. BASE & RESET
+   ========================================= */
 body { 
     background-color: #050508; 
     color: white; 
-    font-family: 'Montserrat', sans-serif;
-    overflow-x: hidden; /* Critical: Stops side scrolling */
+    overscroll-behavior: none; 
 }
 
-/* Fix Input Zoom on iPhone */
-input, textarea, select { font-size: 16px !important; }
+input, textarea { 
+    -webkit-user-select: text; 
+    user-select: text; 
+}
 
-/* Utilities */
-.scroll-area { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
-.fixed-bottom { flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
-.glass-panel { background: rgba(20, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15); }
-.hide-scroll::-webkit-scrollbar { display: none; }
+/* =========================================
+   2. DRAWERS (Layout Logic)
+   ========================================= */
+/* Full Screen Drawer (e.g., Investor/Team Vaults) */
+.drawer-full { 
+    position: fixed; 
+    bottom: 0; left: 0; right: 0; top: 0; 
+    background: #0f172a; 
+    transform: translateY(100%); /* Hidden by default */
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); 
+    z-index: 100; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100dvh; 
+}
 
-/* ============================
-   2. ANIMATIONS & EFFECTS
-   ============================ */
-@keyframes liquid-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
-.float-card { animation: liquid-float 6s ease-in-out infinite; transition: transform 0.2s; }
-.float-card:active { transform: scale(0.98); }
-.float-card:hover { transform: translateY(-3px); }
+.drawer-full.active { 
+    transform: translateY(0); /* Visible state */
+}
 
-.pulse-glow { animation: pulse-green 2s infinite; }
-@keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(57, 255, 20, 0); } 100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); } }
+/* Partial Drawer (e.g., Cart) */
+.drawer-partial { 
+    position: fixed; 
+    bottom: 0; left: 0; right: 0; 
+    background: rgba(20, 20, 30, 0.98); 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+    border-top-left-radius: 24px; 
+    border-top-right-radius: 24px; 
+    transform: translateY(100%); /* Hidden by default */
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); 
+    z-index: 90; 
+    max-height: 85vh; 
+    display: flex; 
+    flex-direction: column; 
+}
 
-/* Scanner HUD */
-.scanner-overlay { position: absolute; inset: 0; pointer-events: none; border: 2px solid rgba(57, 255, 20, 0.1); z-index: 10; }
-.scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #39ff14; box-shadow: 0 0 10px #39ff14; animation: scan-down 3s linear infinite; }
-@keyframes scan-down { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+.drawer-partial.active { 
+    transform: translateY(0); /* Visible state */
+}
 
-/* Shimmer */
-.shimmer-card { position: relative; overflow: hidden; background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(10px); }
-.shimmer-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent); transform: skewX(-25deg); animation: shimmer 6s infinite; pointer-events: none; }
-@keyframes shimmer { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+/* =========================================
+   3. ANIMATIONS
+   ========================================= */
+/* Floating Card Effect */
+@keyframes liquid-float { 
+    0%, 100% { transform: translateY(0px); } 
+    50% { transform: translateY(-5px); } 
+}
 
-/* Chat */
-.chat-bubble { max-width: 85%; padding: 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; animation: popIn 0.2s ease-out; }
-.chat-self { background-color: #2563eb; color: white; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto; }
-.chat-other { background-color: #1f2937; color: #e5e7eb; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #374151; }
-.avatar-circle { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #aaa; border: 1px solid #555; cursor: pointer; }
-@keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.float-card { 
+    animation: liquid-float 6s ease-in-out infinite; 
+    transition: transform 0.2s; 
+}
 
-/* Toast */
-#apiToast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #22c55e; color: black; padding: 8px 16px; border-radius: 20px; font-size: 10px; font-weight: bold; z-index: 9999; transition: top 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.float-card:active { 
+    transform: scale(0.98); 
+}
+
+/* Green Pulse Glow */
+.pulse-glow { 
+    animation: pulse-green 2s infinite; 
+}
+
+@keyframes pulse-green { 
+    0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); } 
+    70% { box-shadow: 0 0 0 15px rgba(57, 255, 20, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); } 
+}
+
+/* Pop-in Animation (Chat Bubbles) */
+@keyframes popIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* Shimmer Loading Effect */
+.shimmer-card { 
+    position: relative; 
+    overflow: hidden; 
+    background: rgba(20, 20, 30, 0.6); 
+    backdrop-filter: blur(10px); 
+}
+
+.shimmer-card::before { 
+    content: ''; 
+    position: absolute; 
+    top: 0; left: -100%; 
+    width: 50%; height: 100%; 
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent); 
+    transform: skewX(-25deg); 
+    animation: shimmer 6s infinite; 
+    pointer-events: none; 
+}
+
+@keyframes shimmer { 
+    0% { left: -100%; } 
+    20% { left: 200%; } 
+    100% { left: 200%; } 
+}
+
+/* =========================================
+   4. AR SCANNER HUD
+   ========================================= */
+.scanner-overlay { 
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none; 
+    border: 2px solid rgba(57, 255, 20, 0.1); 
+    z-index: 10; 
+}
+
+.scanner-line { 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 2px; 
+    background: #39ff14; 
+    box-shadow: 0 0 10px #39ff14; 
+    animation: scan-down 3s linear infinite; 
+}
+
+@keyframes scan-down { 
+    0% { top: 0; opacity: 0; } 
+    10% { opacity: 1; } 
+    90% { opacity: 1; } 
+    100% { top: 100%; opacity: 0; } 
+}
+
+.hud-corner { 
+    position: absolute; 
+    width: 40px; height: 40px; 
+    border: 4px solid #39ff14; 
+    opacity: 0.8; 
+}
+
+.tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+/* =========================================
+   5. UI COMPONENTS & UTILITIES
+   ========================================= */
+/* Toast Notifications */
+#apiToast { 
+    position: fixed; 
+    top: -50px; left: 50%; 
+    transform: translateX(-50%); 
+    background: #22c55e; 
+    color: black; 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    font-size: 10px; font-weight: bold; 
+    z-index: 9999; 
+    transition: top 0.3s; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+}
+
 #apiToast.active { top: 20px; }
 #apiToast.error { background: #ef4444; color: white; }
 
-/* ============================
-   3. MOBILE DRAWER LOGIC (Default)
-   ============================ */
-.drawer-full { 
-    position: fixed; bottom: 0; left: 0; right: 0; top: 0; 
-    background: #0f172a; 
-    transform: translateY(100%); /* HIDDEN BY DEFAULT */
-    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); 
-    z-index: 100; display: flex; flex-direction: column; height: 100dvh; 
+/* Chat Elements */
+.chat-bubble { 
+    max-width: 85%; 
+    padding: 12px; 
+    border-radius: 16px; 
+    margin-bottom: 8px; 
+    font-size: 13px; line-height: 1.4; 
+    animation: popIn 0.2s ease-out; 
 }
-.drawer-full.active { transform: translateY(0); }
 
-.drawer-partial { 
-    position: fixed; bottom: 0; left: 0; right: 0; 
-    background: rgba(20, 20, 30, 0.98); 
-    border-top: 1px solid rgba(255,255,255,0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; 
-    transform: translateY(100%); /* HIDDEN BY DEFAULT */
-    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); 
-    z-index: 90; max-height: 85vh; display: flex; flex-direction: column; 
+.chat-self { 
+    background-color: #2563eb; 
+    color: white; 
+    align-self: flex-end; 
+    border-bottom-right-radius: 4px; 
+    margin-left: auto; 
 }
-.drawer-partial.active { transform: translateY(0); }
 
-/* ============================
-   4. PC / DESKTOP EMULATOR (Security Fixed)
-   ============================ */
-@media (min-width: 768px) {
-    body {
-        max-width: 480px;
-        margin: 0 auto;
-        border-left: 1px solid rgba(255,255,255,0.05);
-        border-right: 1px solid rgba(255,255,255,0.05);
-        min-height: 100vh;
-        position: relative;
-        background-color: #000;
-    }
-    
-    html {
-        background-color: #111;
-        background-image: radial-gradient(#1a1a2e 1px, transparent 1px);
-        background-size: 20px 20px;
-    }
-
-    /* === SECURITY FIX START === */
-    /* We must re-declare the HIDDEN state for PC, or it will pop open */
-    .drawer-full, 
-    .drawer-partial, 
-    #scannerModal, 
-    #loginModal, 
-    #productModal, 
-    #configExportModal, 
-    #memberModal,
-    #systemLockdown {
-        left: 0; 
-        right: 0; 
-        margin-left: auto; 
-        margin-right: auto;
-        max-width: 480px; 
-    }
-
-    /* Ensure they stay hidden until .active is added */
-    .drawer-full { transform: translateY(100%); } 
-    .drawer-full.active { transform: translateY(0); }
-
-    .drawer-partial { transform: translateY(100%); }
-    .drawer-partial.active { transform: translateY(0); }
-    /* === SECURITY FIX END === */
-
-    /* Fix Cart Button Position */
-    button[onclick="toggleSheet()"] {
-        right: auto !important;
-        left: 50% !important;
-        margin-left: 160px;
-    }
-
-    /* Scrollbars for Mouse */
-    ::-webkit-scrollbar { width: 6px; display: block; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-    .hide-scroll::-webkit-scrollbar { display: block; }
+.chat-other { 
+    background-color: #1f2937; 
+    color: #e5e7eb; 
+    align-self: flex-start; 
+    border-bottom-left-radius: 4px; 
+    border: 1px solid #374151; 
 }
+
+.avatar-circle { 
+    width: 28px; height: 28px; 
+    border-radius: 50%; 
+    background: #333; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 10px; font-weight: bold; color: #aaa; 
+    border: 1px solid #555; 
+    cursor: pointer; 
+}
+
+.seen-indicator { 
+    font-size: 10px; color: #65676b; 
+    text-align: right; 
+    margin-top: 2px; margin-right: 4px; 
+    display: flex; align-items: center; justify-content: flex-end; 
+    gap: 4px; 
+}
+
+.eye-icon { 
+    width: 12px; height: 12px; opacity: 0.7; 
+}
+
+/* Task Checkboxes */
+.task-check:checked + label span { background-color: #22c55e; border-color: #22c55e; }
+.task-check:checked + label p { text-decoration: line-through; color: #6b7280; }
+
+/* Tabs */
+.tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+.tab-inactive { border-bottom: 2px solid transparent; color: #6b7280; }
+
+/* Helpers */
+.scroll-area { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
+.fixed-bottom { flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
+.admin-editable { border: 1px dashed #ff0000; background: rgba(255, 0, 0, 0.1); cursor: text; }
+.glass-panel { background: rgba(20, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15); }
