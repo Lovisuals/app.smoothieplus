@@ -1,81 +1,32 @@
-/* BASE SETTINGS */
+/* ============================
+   1. BASE & MOBILE STYLES 
+   ============================ */
 body { 
     background-color: #050508; 
     color: white; 
-    overscroll-behavior: none; 
-    /* PC FIX: Center the app on large screens */
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050508 100%);
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden; /* Prevents side-scroll */
 }
 
-/* APP CONTAINER (New wrapper logic) */
-html, body { height: 100%; margin: 0; padding: 0; }
-body > * { max-width: 480px; width: 100%; } /* Forces Mobile Width on PC */
-
-/* INPUTS */
-input, textarea { -webkit-user-select: text; user-select: text; font-size: 16px !important; }
+/* Force legible font size on inputs to stop zooming */
+input, textarea, select { font-size: 16px !important; }
 
 /* UTILITIES */
 .scroll-area { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
 .fixed-bottom { flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
 .glass-panel { background: rgba(20, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15); }
-
-/* DRAWERS (Updated for PC Centering) */
-.drawer-full { 
-    position: fixed; 
-    bottom: 0; top: 0; 
-    /* PC FIX: Keep drawer centered and narrow */
-    left: 50%; transform: translateX(-50%) translateY(100%); 
-    width: 100%; max-width: 480px;
-    background: #0f172a; 
-    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); 
-    z-index: 100; 
-    display: flex; flex-direction: column; height: 100dvh; 
-    box-shadow: 0 0 50px rgba(0,0,0,0.5);
-}
-.drawer-full.active { transform: translateX(-50%) translateY(0); }
-
-.drawer-partial { 
-    position: fixed; 
-    bottom: 0; 
-    /* PC FIX: Keep drawer centered and narrow */
-    left: 50%; transform: translateX(-50%) translateY(100%);
-    width: 100%; max-width: 480px;
-    background: rgba(20, 20, 30, 0.98); 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-    border-top-left-radius: 24px; border-top-right-radius: 24px; 
-    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); 
-    z-index: 90; max-height: 85vh; display: flex; flex-direction: column; 
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-}
-.drawer-partial.active { transform: translateX(-50%) translateY(0); }
-
-/* SCROLLBARS (Restore for PC Mouse Users) */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
-
-/* MODALS (PC Fix) */
-#scannerModal, #loginModal, #productModal, #configExportModal, #memberModal {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%);
-    /* Reset transform when hidden/shown via flex */
-}
+.hide-scroll::-webkit-scrollbar { display: none; }
 
 /* ANIMATIONS */
 @keyframes liquid-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
 .float-card { animation: liquid-float 6s ease-in-out infinite; transition: transform 0.2s; }
 .float-card:active { transform: scale(0.98); }
-.float-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(57, 255, 20, 0.3); cursor: pointer; } /* PC Hover State */
+.float-card:hover { transform: translateY(-3px); }
 
 .pulse-glow { animation: pulse-green 2s infinite; }
 @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(57, 255, 20, 0); } 100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); } }
 
-/* SCANNER HUD */
+/* SCANNER & SHIMMER */
 .scanner-overlay { position: absolute; inset: 0; pointer-events: none; border: 2px solid rgba(57, 255, 20, 0.1); z-index: 10; }
 .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #39ff14; box-shadow: 0 0 10px #39ff14; animation: scan-down 3s linear infinite; }
 .hud-corner { position: absolute; width: 40px; height: 40px; border: 4px solid #39ff14; opacity: 0.8; }
@@ -85,19 +36,86 @@ input, textarea { -webkit-user-select: text; user-select: text; font-size: 16px 
 .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
 @keyframes scan-down { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
 
-/* SHIMMER */
 .shimmer-card { position: relative; overflow: hidden; background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(10px); }
 .shimmer-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent); transform: skewX(-25deg); animation: shimmer 6s infinite; pointer-events: none; }
 @keyframes shimmer { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-/* CHAT BUBBLES */
+/* DRAWERS (Mobile Default) */
+.drawer-full { position: fixed; bottom: 0; left: 0; right: 0; top: 0; background: #0f172a; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); z-index: 100; display: flex; flex-direction: column; height: 100dvh; }
+.drawer-full.active { transform: translateY(0); }
+
+.drawer-partial { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(20, 20, 30, 0.98); border-top: 1px solid rgba(255,255,255,0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); z-index: 90; max-height: 85vh; display: flex; flex-direction: column; }
+.drawer-partial.active { transform: translateY(0); }
+
+/* TOAST & CHAT */
+#apiToast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #22c55e; color: black; padding: 8px 16px; border-radius: 20px; font-size: 10px; font-weight: bold; z-index: 9999; transition: top 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+#apiToast.active { top: 20px; }
+#apiToast.error { background: #ef4444; color: white; }
+
 .chat-bubble { max-width: 85%; padding: 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; animation: popIn 0.2s ease-out; }
 .chat-self { background-color: #2563eb; color: white; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto; }
 .chat-other { background-color: #1f2937; color: #e5e7eb; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #374151; }
 .avatar-circle { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #aaa; border: 1px solid #555; cursor: pointer; }
 @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* TOAST */
-#apiToast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #22c55e; color: black; padding: 8px 16px; border-radius: 20px; font-size: 10px; font-weight: bold; z-index: 9999; transition: top 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: auto; white-space: nowrap; }
-#apiToast.active { top: 20px; }
-#apiToast.error { background: #ef4444; color: white; }
+
+/* ============================
+   2. PC / DESKTOP EMULATOR MODE 
+   ============================ */
+@media (min-width: 768px) {
+    /* Center the app like a phone */
+    body {
+        max-width: 480px;
+        margin: 0 auto;
+        border-left: 1px solid rgba(255,255,255,0.05);
+        border-right: 1px solid rgba(255,255,255,0.05);
+        min-height: 100vh;
+        position: relative;
+        background-color: #000; /* Darker background inside the phone frame */
+    }
+    
+    /* Paint the area outside the phone frame */
+    html {
+        background-color: #111;
+        background-image: radial-gradient(#1a1a2e 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    /* Force Fixed Elements (Drawers, Modals) to stay within the 480px frame */
+    .drawer-full, 
+    .drawer-partial, 
+    #scannerModal, 
+    #loginModal, 
+    #productModal, 
+    #configExportModal, 
+    #memberModal,
+    #systemLockdown {
+        left: 0; 
+        right: 0; 
+        margin-left: auto; 
+        margin-right: auto;
+        max-width: 480px; /* Crucial: Locks width to phone size */
+    }
+
+    /* Fix the Cart Button (FAB) position */
+    button[onclick="toggleSheet()"] {
+        right: auto !important; /* Unset the default right:6 */
+        left: 50% !important;   /* Center anchor */
+        margin-left: 160px;     /* Push to the right edge of the 480px frame */
+    }
+
+    /* Fix the Save Button position */
+    #adminSaveBtn {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+    }
+
+    /* Restore Scrollbars for Mouse Users */
+    ::-webkit-scrollbar { width: 6px; display: block; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+    .hide-scroll::-webkit-scrollbar { display: block; } /* Override hiding */
+}
