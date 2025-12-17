@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>smoothiePlus+ | Modular</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Montserrat', 'sans-serif'] }, colors: { neon: '#39ff14' } } } }
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="pb-32 overflow-x-hidden font-sans">
+    
+    <div id="apiToast">SYNCED ✓</div>
+    <div id="statusBadge" class="hidden"></div>
+    
+    <div id="scannerModal" class="fixed inset-0 z-[150] bg-black hidden flex-col">
+        <div class="relative flex-1 overflow-hidden bg-black">
+            <video id="scannerVideo" class="absolute inset-0 w-full h-full object-cover opacity-80" autoplay playsinline muted></video>
+            <div class="scanner-overlay">
+                <div class="scanner-line"></div>
+                <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+                <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            </div>
+            <button onclick="closeScanner()" class="absolute top-4 right-4 z-50 text-white font-bold bg-black/50 rounded-full w-10 h-10 flex items-center justify-center border border-white/20">✕</button>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center px-4 pt-6 pb-2 relative z-50">
+        <h1 class="text-2xl font-black tracking-tighter uppercase leading-none">
+            smoothie<span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Plus+</span>
+        </h1>
+        <button onclick="startScanner()" class="bg-gray-900 border border-green-500/50 text-green-400 rounded-full w-10 h-10 flex items-center justify-center hover:bg-green-500 hover:text-black transition shadow-[0_0_15px_rgba(57,255,20,0.3)]">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+        </button>
+    </div>
+
+    <main id="menuGrid" class="px-4 grid grid-cols-2 gap-4 max-w-md mx-auto relative z-10 min-h-[50vh]">
+        <div id="loadingMsg" class="col-span-2 text-center text-gray-500 mt-10">Loading Menu...</div>
+    </main>
+
+    <footer class="mt-20 mb-32 text-center space-y-6">
+        <button onclick="openLoginModal()" class="text-[10px] text-gray-600 hover:text-white transition uppercase tracking-widest py-3 px-6 border border-gray-800 rounded-full flex items-center justify-center gap-2 mx-auto bg-gray-900/50">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Employee Portal
+        </button>
+    </footer>
+
+    <button onclick="toggleSheet()" class="fixed bottom-6 right-6 bg-green-500 text-black w-14 h-14 rounded-full shadow-2xl z-40 pulse-glow flex items-center justify-center transform active:scale-90 transition">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        <span id="cartCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden border border-black">0</span>
+    </button>
+
+    <div id="productModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md" style="display:none;">
+        <div class="bg-gray-900 border border-gray-700 w-full max-w-sm rounded-3xl p-6 relative shadow-2xl shimmer-card">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center z-20">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95" style="display:none;">
+        <div class="w-full max-w-sm text-center bg-gray-900 border border-gray-800 p-8 rounded-2xl shadow-2xl relative shimmer-card">
+            <h2 class="text-2xl font-black uppercase text-white mb-2">Access Portal</h2>
+            <div id="authStage">
+                <input type="password" id="accessKey" placeholder="ENTER KEY" class="w-full bg-gray-800 border border-gray-700 text-center text-white text-xl tracking-widest rounded-xl px-4 py-4 focus:outline-none focus:border-green-500 mb-4">
+                <button onclick="checkAccess()" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200">AUTHENTICATE</button>
+            </div>
+            <div id="createPinStage" class="hidden">
+                <input type="text" id="newName" placeholder="YOUR NAME" class="w-full bg-gray-800 border border-blue-500 text-center text-white text-sm rounded-xl px-4 py-3 mb-3">
+                <input type="password" id="newPin" placeholder="CREATE PIN" class="w-full bg-gray-800 border border-green-500 text-center text-white text-xl tracking-widest rounded-xl px-4 py-3 mb-6">
+                <button onclick="saveNewIdentity()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl">REGISTER</button>
+            </div>
+            <button onclick="closeLoginModal()" class="mt-6 text-xs text-gray-600 block w-full hover:text-white">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="investorVault" class="drawer-full">
+        <div class="max-w-2xl mx-auto w-full h-full flex flex-col bg-gray-900">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-800 bg-gray-900/95">
+                <h2 class="text-xl font-black text-green-500">INVESTOR PROTOCOL</h2>
+                <button onclick="closeDrawer('investorVault')" class="text-gray-500 hover:text-red-500 text-xl">✕</button>
+            </div>
+            <div class="scroll-area p-6 pb-32">
+                <h3 class="text-3xl font-black text-white mb-4">PRODUCT LINE</h3>
+                <div id="investorProductGrid" class="grid grid-cols-2 gap-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="teamPanelVault" class="drawer-full bg-[#0f172a]">
+        <div class="flex justify-between items-center bg-gray-900/95 backdrop-blur-md py-4 px-4 border-b border-gray-800 flex-shrink-0">
+            <div><h2 class="text-lg font-black text-blue-500 tracking-tighter">NEURAL LINK</h2></div>
+            <button onclick="closeDrawer('teamPanelVault')" class="text-gray-500 hover:text-red-500 text-xl">✕</button>
+        </div>
+        <div class="flex-1 flex flex-col h-full overflow-hidden p-4">
+            <p class="text-center text-gray-500 mt-20">Chat & Tasks Synced via Config.</p>
+        </div>
+    </div>
+
+    <div id="orderSheet" class="drawer-partial">
+        <div class="w-12 h-1 bg-gray-500 rounded-full mx-auto mb-6 mt-4 cursor-pointer" onclick="toggleSheet()"></div>
+        <div class="px-6 pb-6 scroll-area">
+            <h3 class="text-xs text-gray-400 uppercase font-bold mb-2">Cart</h3>
+            <div id="cartItems" class="space-y-2 mb-4 text-sm font-medium text-gray-200"></div>
+            <div class="border-t border-gray-600 my-4 pt-4">
+                <div class="flex justify-between items-end mb-4"><span class="text-gray-400 text-sm">Total:</span><span id="totalPrice" class="text-3xl font-black text-green-400">₦0</span></div>
+                <div class="bg-gray-800/80 rounded-xl p-3 border border-gray-600 mb-6 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Bank Transfer (<span id="dispBankName"></span>)</p>
+                        <p id="dispAcctNum" class="font-mono text-white font-bold text-lg select-all"></p>
+                        <p id="dispAcctName" class="text-[10px] text-gray-400"></p>
+                    </div>
+                    <button id="copyBankBtn" onclick="copyBank()" class="text-xs bg-gray-700 text-gray-300 px-3 py-1.5 rounded transition">Copy</button>
+                </div>
+            </div>
+            <input type="text" id="custName" placeholder="Your Name" class="w-full bg-gray-900/80 border border-gray-600 text-white rounded-xl px-4 py-3 mb-2">
+            <textarea id="custAddress" rows="2" placeholder="Address" class="w-full bg-gray-900/80 border border-gray-600 text-white rounded-xl px-4 py-3 mb-4"></textarea>
+            <button onclick="sendOrder()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-black font-black uppercase py-4 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.4)]">Submit Order</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="logic.js"></script>
+</body>
+</html>
